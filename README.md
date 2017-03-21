@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://raw.githubusercontent.com/NCBI-Hackathons/ga4gh-ncbi-api/master/docs/images/logo.png" alt="GA4GH NCBI API inside a helix" />
+</p>
+
 # GA4GH NCBI API
 
 Genomic data is often very large and requires metadata in order to be used as
@@ -29,6 +33,11 @@ Give docker pull instructions and details
 ## Example usage
 
 link to notebook
+
+## Architecture
+
+![An architecture diagram describing how the systems interrelate](https://raw.githubusercontent.com/NCBI-Hackathons/ga4gh-ncbi-api/master/docs/images/ga4gh-ncbi-api.png)
+
 
 ## GA4GH Schemas
 
