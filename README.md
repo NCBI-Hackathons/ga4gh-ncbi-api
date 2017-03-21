@@ -12,10 +12,30 @@ the NCBI data becomes discoverable using GA4GH HTTP Clients.
 
 [Draft Manuscript](https://docs.google.com/document/d/170xIZ2v9ciM704T4tCXWQHz71kV9kkXS3qdlgtRxb7U/edit?usp=sharing)
 
+## Installation
+
+Install python
+
+Install pip
+
+Install virtualenvironment
+
+Install NGS
+
+## Running via docker
+
+Give docker pull instructions and details
+
+## Example usage
+
+link to notebook
+
 ## GA4GH Schemas
 
 The GA4GH has designed a schema in Google Protocol Buffers which provides the
 data serialization and de-serialization layers for this application.
+
+## What is protocol buffers
 
 ### Dataset Service
 
