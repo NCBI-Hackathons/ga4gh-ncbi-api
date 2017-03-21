@@ -17,8 +17,10 @@ class MyTest(TestCase):
         self.assertEqual(response.status_code, 200, "A known good endpoint "
                                                     "should return success")
 
+
     def test_schemas_deserialization(self):
-        request = '{"pageSize": 3}'
+        # Mock search datasets request
+        request = '{"pageSize": 3, "pageToken": "text"}'
         # We pass the class, not an instance of the class to `fromJson`
         request_schema = protocol.SearchDatasetsRequest
         deserialized_request = protocol.fromJson(request, request_schema)
