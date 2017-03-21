@@ -14,17 +14,22 @@ The National Center for Biotechnology Information (NCBI) curates a great deal
 of invaluable genomic data. By making these data available using GA4GH methods
 the NCBI data becomes discoverable using GA4GH HTTP Clients.
 
-[Draft Manuscript](https://docs.google.com/document/d/170xIZ2v9ciM704T4tCXWQHz71kV9kkXS3qdlgtRxb7U/edit?usp=sharing)
+This software was developed as part of the March 2017 NCBI Hackathon. A [draft manuscript](https://docs.google.com/document/d/170xIZ2v9ciM704T4tCXWQHz71kV9kkXS3qdlgtRxb7U/edit?usp=sharing) is available, which will be submitted to F1000.
 
 ## Installation
 
-Install python
+### Install Python 2
 
-Install pip
+This application runs in Python 2.7. It can be installed using this command.
 
-Install virtualenvironment
+`sudo apt-get install python-dev python-virtualenv zlib1g-dev libxslt1-dev`
 
-Install NGS
+### Install NGS
+
+This software makes use of the NCBI NGS Python bindings, which currently must
+be downloaded and installed on the host system.
+
+Please download and install a version appropriate to your system from [here](https://github.com/ncbi/ngs/wiki/Downloads).
 
 ## Running via docker
 
@@ -32,12 +37,12 @@ Give docker pull instructions and details
 
 ## Example usage
 
-link to notebook
+We will provide a iPython Notebook that demonstrates interacting with this
+software.
 
 ## Architecture
 
 ![An architecture diagram describing how the systems interrelate](https://raw.githubusercontent.com/NCBI-Hackathons/ga4gh-ncbi-api/master/docs/images/ga4gh-ncbi-api.png)
-
 
 ## GA4GH Schemas
 
@@ -45,6 +50,16 @@ The GA4GH has designed a schema in Google Protocol Buffers which provides the
 data serialization and de-serialization layers for this application.
 
 ## What is protocol buffers
+
+Protocol Buffers as an interchange format Open Sourced by Google. It allows
+schemas to be defined in a language neutral IDL. Bindings can be generated for
+your language of choice, making available prototypical messages that can be
+"filled out" by implementors.
+
+This allows a portable template to be used by our software. This server also
+uses serialization helpers made available by the [ga4gh-schemas](https://pypi.python.org/pypi/ga4gh-schemas/0.6.0a10.post1)
+python module. Once an NCBI message has been mapped to the protocol buffers, the
+resulting message can be reliably converted to and from JSON.
 
 ### Dataset Service
 
