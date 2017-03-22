@@ -4,7 +4,7 @@ from flask import Flask, json, request, render_template, Response
 from ga4gh.schemas import protocol
 
 import ncbi
-import logging
+
 
 app = Flask(__name__)
 
