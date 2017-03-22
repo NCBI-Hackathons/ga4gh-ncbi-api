@@ -11,20 +11,31 @@ class MyTest(TestCase):
     def create_app(self):
         return app.get_app()
 
-    def test_search_readgroups(self):
-        response = self.client.post('/readgroups', data='{}')
+#    def test_search_read_group_sets(self):
+#        response = self.client.post('/readgroupsets/search', data='{}')
+#        response_proto = protocol.fromJson(
+#            response.get_data(), protocol.SearchReadGroupSetsResponse)
+#        self.assertIsNotNone(response_proto, "Something should be returned")
+#        self.assertEqual(response.status_code, 200, "A known good endpoint "
+#                                                    "should return success")
+#        self.assertGreater(
+#            len(response_proto.read_group_sets), 0,
+#            "Some read group sets should be returned.")
+
+    def test_search_read_group_sets(self):
+        response = self.client.post('/readgroupsets/search', data='{}')
         response_proto = protocol.fromJson(
-            response.get_data(), protocol.SearchReadgroupsResponse)
+            response.get_data(), protocol.SearchReadGroupSetsResponse)
         self.assertIsNotNone(response_proto, "Something should be returned")
         self.assertEqual(response.status_code, 200, "A known good endpoint "
                                                     "should return success")
         self.assertGreater(
             len(response_proto.readgroups), 0,
-            "Some readgroups should be returned.")
+            "Some read group sets should be returned.")
 
-        response = self.client.post('/readgroups', data='{"dataset_id": 356464}')
+        response = self.client.post('/readgroupsets/search', data='{"dataset_id": 356464}')
         response_proto = protocol.fromJson(
-            response.get_data(), protocol.SearchReadgroupsResponse)
+            response.get_data(), protocol.SearchReadGroupSetsResponse)
         self.assertEqual(len(response_proto.readgroups), 356464)
 
     def test_search_datasets(self):
@@ -42,17 +53,6 @@ class MyTest(TestCase):
         response_proto = protocol.fromJson(
             response.get_data(), protocol.SearchDatasetsResponse)
         self.assertEqual(len(response_proto.datasets), 2)
-
-    def test_search_read_group_sets(self):
-        response = self.client.post('/readgroupsets/search', data='{}')
-        response_proto = protocol.fromJson(
-            response.get_data(), protocol.SearchReadGroupSetsResponse)
-        self.assertIsNotNone(response_proto, "Something should be returned")
-        self.assertEqual(response.status_code, 200, "A known good endpoint "
-                                                    "should return success")
-        self.assertGreater(
-            len(response_proto.read_group_sets), 0,
-            "Some read group sets should be returned.")
 
     def test_search_reads(self):
         run_accession = 'SRR2856889'  # paired
