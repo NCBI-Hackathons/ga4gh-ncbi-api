@@ -218,7 +218,7 @@ def search_readgroups(request):
             for sra in id.findall("./Link/Id"):
                     ids.append(sra.text)
     # === get all data for these SRAs ===
-    readgroupsets = []
+    readgroupsets = protocol.ReadGroupSet()
     while (len(ids)):
         # e.g., https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=sra&id=3543186,3543185,3543183
         sra_ids = ids[:sras_per_fetch]
