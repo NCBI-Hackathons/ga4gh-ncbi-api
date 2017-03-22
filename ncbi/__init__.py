@@ -17,6 +17,8 @@ _CIGAR_OPERATION_MAP = {'M': protocol.CigarUnit.ALIGNMENT_MATCH,
            '=': protocol.CigarUnit.SEQUENCE_MATCH,
            'X': protocol.CigarUnit.SEQUENCE_MISMATCH}
 
+# Default page size
+_DEFAULT_PAGE_SIZE = 1000
 
 def _get_num_reads(ngs_alignment):
     """ Returns the number of reads in the template of an NCBI/NGS alignment
@@ -199,16 +201,42 @@ def search_datasets(request):
     return dataset_list
 
 def search_reads(request):
+    """ Searches a genomic interval in the NCBI API and returns a list of converted GA4GH alignments
+    
+    Args:
+        request: SearchReadsRequest. If `request.page_size` is set, up to this many records are returned.
+                 If not set, `_DEFAULT_PAGE_SIZE` is used as the page size.
+                 `request.start` can be overridden by providing a greater start position in `request.page_token`.
+                 If provided, `request.page_token` is parsed to a long and compared with `request.start`. 
+                 In that case, the greater of the two is used as the zero-based inclusive interval start.
+    
+    Returns:
+        Tuple:
+            1) List of converted alignments in GA4GH schema
+            2) Maximum zero-based exclusive alignment end position over all alignments returned.
+               This value can be set as request.page_token (after parsing to a string) for a subsequent
+               request; in that case, streaming will pick up where it left off after this request.
+    
+    """
     # We are assuming the read group IDs are singleton
     run_accession = request.read_group_ids[0]
     reference_name = request.reference_id
-    start = request.start
+    # Choose the start position between request.start and request.page_token
+    try:
+        start = max(long(request.page_token), request.start)
+    except ValueError:
+        start = request.start
     end = request.end
+    # Number of alignments to get
+    if request.page_size < 1:
+        num_aligns = _DEFAULT_PAGE_SIZE
+    else:
+        num_aligns = request.page_size
 
     alignments = []
+    max_aligned_pos = 0 # Keep track of max zero-based exclusive alignment end
     # open requested accession using SRA implementation of the API
     with NGS.openReadCollection(run_accession) as run:
-        run_name = run.getName()
         # get requested reference
         with run.getReference(reference_name) as reference:
             # start iterator on requested range
@@ -218,8 +246,11 @@ def search_reads(request):
                                        Alignment.primaryAlignment) as it:
                 i = 0
                 while it.nextAlignment():
+                    # Only get the requested number of alignments
+                    if i == num_aligns:
+                        break
+                    max_aligned_pos = max(max_aligned_pos, it.getAlignmentPosition() + it.getAlignmentLength())
                     ga_alignment = _convert_alignment(it)
                     alignments.append(ga_alignment)
                     i += 1
-    print ("Read {} alignments for {}".format(i, run_name))
-    return alignments
+    return (alignments, max_aligned_pos)

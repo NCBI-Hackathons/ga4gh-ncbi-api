@@ -65,6 +65,23 @@ class MyTest(TestCase):
             len(response_proto.alignments), 0,
             "Some alignments should be returned.")
 
+    def test_read_search_paging(self):
+        run_accession = 'SRR2856889'  # paired
+        # acc = 'SRR1482462' # unpaired
+        reference_name = 'chr1'
+        start = 8000000
+        end = 9100000
+        request = protocol.SearchReadsRequest()
+        request.read_group_ids.extend([run_accession])
+        request.reference_id = reference_name
+        request.start = start
+        request.end = end
+        request.page_size = 10
+        request.page_token = '9020919'
+        reads_list = ncbi.search_reads(request)
+        self.assertEqual(len(reads_list[0]), 10,
+                         "When page size is 10, 10 alignments should be returned")
+
     def test_search_reads_controller(self):
         run_accession = 'SRR2856889'  # paired
         # acc = 'SRR1482462' # unpaired
