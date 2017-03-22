@@ -33,7 +33,7 @@ class MyTest(TestCase):
             len(response_proto.readgroups), 0,
             "Some read group sets should be returned.")
 
-        response = self.client.post('/readgroupsets/search', data='{"dataset_id": 356464}')
+        response = self.client.post('/readgroupsets/search', data='{"readgroups)": 356464}')
         response_proto = protocol.fromJson(
             response.get_data(), protocol.SearchReadGroupSetsResponse)
         self.assertEqual(len(response_proto.readgroups), 356464)
