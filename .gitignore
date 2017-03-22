@@ -95,3 +95,6 @@ ENV/
 
 # Mac OS Folder Settings
 .DS_Store
+
+# The version file made by setuptools
+_version.py

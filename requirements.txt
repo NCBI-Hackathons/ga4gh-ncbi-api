@@ -1,3 +1,5 @@
 Flask
 Flask-Testing
 ga4gh-schemas==0.6.0a10.post1
+nose
+requests
