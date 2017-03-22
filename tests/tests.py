@@ -4,7 +4,7 @@ from flask_testing import TestCase
 from ga4gh.schemas import protocol
 
 import ncbi
-from app import app
+from ga4gh_ncbi import app
 
 class MyTest(TestCase):
 
