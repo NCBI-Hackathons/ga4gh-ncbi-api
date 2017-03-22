@@ -33,7 +33,11 @@ Please download and install a version appropriate to your system from [here](htt
 
 ## Running via docker
 
-Give docker pull instructions and details
+Docker pull
+
+`sudo docker build  . -t ga4gh-ncbi-api`
+
+`sudo docker run ga4gh-ncbi-api -d -p 8000:80`
 
 ## Example usage
 
