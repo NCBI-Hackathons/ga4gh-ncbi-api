@@ -24,12 +24,29 @@ This application runs in Python 2.7. It can be installed using this command.
 
 `sudo apt-get install python-dev python-virtualenv zlib1g-dev libxslt1-dev`
 
-### Install NGS
+### Get the code
+
+The following commands will download the latest code available in this
+repository, enters the directory and installs the package. It will make
+available in your current Python environment the `ncbi` and `ga4gh_ncbi`
+modules behind this application.
+
+```
+git clone https://github.com/NCBI-Hackathons/ga4gh-ncbi-api.git
+cd ga4gh-ncbi-api
+pip install .
+```
+
+### Installing NGS
 
 This software makes use of the NCBI NGS Python bindings, which currently must
 be downloaded and installed on the host system.
 
-Please download and install a version appropriate to your system from [here](https://github.com/ncbi/ngs/wiki/Downloads).
+During the first run of your application, depending on the configuration, the
+library may take a few minutes to download. If your application is not responsive
+at first, this may be the cause.
+
+Their most recent downloads are available [here](https://github.com/ncbi/ngs/wiki/Downloads).
 
 ## Running via docker
 
@@ -53,9 +70,9 @@ software.
 The GA4GH has designed a schema in Google Protocol Buffers which provides the
 data serialization and de-serialization layers for this application.
 
-## What is protocol buffers
+## What is Protocol Buffers?
 
-Protocol Buffers as an interchange format Open Sourced by Google. It allows
+Protocol Buffers is an interchange format Open Sourced by Google. It allows
 schemas to be defined in a language neutral IDL. Bindings can be generated for
 your language of choice, making available prototypical messages that can be
 "filled out" by implementors.
