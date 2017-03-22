@@ -4,6 +4,7 @@ from flask import Flask, json, request, render_template, Response
 from ga4gh.schemas import protocol
 
 import ncbi
+import logging
 
 app = Flask(__name__)
 
@@ -12,9 +13,9 @@ def _serialize_response(response_proto):
     return Response(
         protocol.toJson(response_proto), mimetype='application/json')
 
-#@app.route('/')
-#def index():
-#	return render_template('index.html')
+@app.route('/')
+def index():
+	return render_template('index.html')
 
 def search_datasets(request):
     """
@@ -55,7 +56,10 @@ def search_reads(request):
 @app.route('/datasets/search', methods=['POST'])
 def search_datasets_route():
     search_request = protocol.SearchDatasetsRequest
-    deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    try:
+    	deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    except Exception, e:
+    	print str(e)
     dataset_list = ncbi.search_datasets(deserialized_request)
     response_proto = protocol.SearchDatasetsResponse()
     response_proto.datasets.extend(dataset_list)
@@ -64,7 +68,10 @@ def search_datasets_route():
 @app.route('/readgroupsets/search', methods=['POST'])
 def search_read_group_sets_route():
     search_request = protocol.SearchReadGroupSetsRequest
-    deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    try:
+    	deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    except Exception, e:
+    	print str(e)
     read_group_set_list = search_read_group_sets(deserialized_request)
     response_proto = protocol.SearchReadGroupSetsResponse()
     response_proto.read_group_sets.extend(read_group_set_list)
@@ -73,7 +80,10 @@ def search_read_group_sets_route():
 @app.route('/reads/search', methods=['POST'])
 def search_reads_route():
     search_request = protocol.SearchReadsRequest
-    deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    try:
+    	deserialized_request = protocol.fromJson(request.get_data(), search_request)
+    except Exception, e:
+    	print str(e)
     alignment_list = ncbi.search_reads(deserialized_request)
     response_proto = protocol.SearchReadsResponse()
     response_proto.alignments.extend(alignment_list)
