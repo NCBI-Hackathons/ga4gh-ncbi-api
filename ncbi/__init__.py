@@ -199,7 +199,7 @@ def search_datasets(request):
     return dataset_list
 
 def search_readgroups(request):
-    ncbi_bioproject_id = request.dataset_id
+    ncbi_bioproject_id = request.readgroups
     esearch_params = {
         'db': 'sra',
         'dbfrom': 'bioproject',
