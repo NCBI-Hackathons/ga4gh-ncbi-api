@@ -30,13 +30,13 @@ class MyTest(TestCase):
         self.assertEqual(response.status_code, 200, "A known good endpoint "
                                                     "should return success")
         self.assertGreater(
-            len(response_proto.readgroups), 0,
+            len(response_proto.read_group_sets), 0,
             "Some read group sets should be returned.")
 
-        response = self.client.post('/readgroupsets/search', data='{"readgroups)": 356464}')
+        response = self.client.post('/readgroupsets/search', data='{"read_group_sets": 356464}')
         response_proto = protocol.fromJson(
             response.get_data(), protocol.SearchReadGroupSetsResponse)
-        self.assertEqual(len(response_proto.readgroups), 356464)
+        self.assertEqual(len(response_proto.read_group_sets), 356464)
 
     def test_search_datasets(self):
         response = self.client.post('/datasets/search', data='{}')
