@@ -4,12 +4,12 @@ from flask_testing import TestCase
 from ga4gh.schemas import protocol
 
 import ncbi
-import app
+from app import app
 
 class MyTest(TestCase):
 
     def create_app(self):
-        return app.app
+        return app.get_app()
 
     def test_search_datasets(self):
         response = self.client.post('/datasets/search', data='{}')
