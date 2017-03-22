@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, json, request, render_template, Response
+from flask import Flask, json, request, render_template, Response, send_from_directory
 from ga4gh.schemas import protocol
 
 import ncbi
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 
 def _serialize_response(response_proto):
@@ -15,7 +15,7 @@ def _serialize_response(response_proto):
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	return render_template('index.html', request=request)
 
 def search_datasets(request):
     """
