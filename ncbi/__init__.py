@@ -202,6 +202,10 @@ def search_datasets(request):
 
 def search_read_group_sets(request):
     ncbi_bioproject_id = request.dataset_id
+    page_size = 100  # Default page size
+    if request.page_size != 0:
+        page_size = request.page_size
+
     esearch_params = {
         'db': 'sra',
         'dbfrom': 'bioproject',
@@ -224,8 +228,8 @@ def search_read_group_sets(request):
     while (len(ids)):
         readgroupset = protocol.ReadGroupSet()
         # e.g., https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=sra&id=3543186,3543185,3543183
-        sra_ids = ids[:100]
-        ids = ids[100:]
+        sra_ids = ids[:page_size]
+        ids = ids[page_size:]
         esearch_params = {
             'db': 'sra',
             'id': ','.join (sra_ids)
@@ -236,7 +240,7 @@ def search_read_group_sets(request):
 
         # parse xml response: get relevant data for these SRAs
         for child in ET.fromstring(esearch_response.text):
-            readgroup = readgroupsets.readgroups.add()
+            readgroup = readgroupset.read_groups.add()
             for pid in child.findall("./SUBMISSION/IDENTIFIERS/PRIMARY_ID"):
                 readgroup.dataset_id = pid.text
             for pid in child.findall("./RUN_SET/RUN/IDENTIFIERS/PRIMARY_ID"):
@@ -244,7 +248,7 @@ def search_read_group_sets(request):
             for eid in child.findall("./RUN_SET/RUN/Pool/Member/IDENTIFIERS/EXTERNAL_ID"):
                 readgroup.biosample_id = eid.text
             for node in child.findall("./RUN_SET/RUN"):
-                readgroup.reference_set_id = node.attrib['assembly']
+                if (node.attrib.has_key('assembly')): readgroup.reference_set_id = node.attrib['assembly']
             readgroupsets.append(readgroup)
     return readgroupsets
 
