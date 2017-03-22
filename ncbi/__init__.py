@@ -38,13 +38,13 @@ def _get_num_reads(ngs_alignment):
 
 def _get_strand(ngs_alignment):
     """ Returns the strand of an NCBI/NGS alignment
-    
+
     Args:
         ngs_alignment (ngs.Alignment): aligned read
 
     Returns:
         GA4GH Strand
-    
+
     """
     try:
         if ngs_alignment.getIsReversedOrientation():
@@ -200,8 +200,8 @@ def search_datasets(request):
         dataset_list.append(dataset)
     return dataset_list
 
-def search_readgroups(request):
-    ncbi_bioproject_id = request.read_group_sets
+def search_read_group_sets(request):
+    ncbi_bioproject_id = request.dataset_id
     esearch_params = {
         'db': 'sra',
         'dbfrom': 'bioproject',
@@ -211,7 +211,7 @@ def search_readgroups(request):
     esearch_response = requests.get(
         "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi",
         esearch_params)
-    
+
     # parse xml response: get SRA IDs
     ids = []
     root = ET.fromstring(esearch_response.text)
@@ -220,11 +220,12 @@ def search_readgroups(request):
             for sra in id.findall("./Link/Id"):
                     ids.append(sra.text)
     # === get all data for these SRAs ===
-    readgroupsets = protocol.ReadGroupSet()
+    readgroupsets = []
     while (len(ids)):
+        readgroupset = protocol.ReadGroupSet()
         # e.g., https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=sra&id=3543186,3543185,3543183
-        sra_ids = ids[:sras_per_fetch]
-        ids = ids[sras_per_fetch:]
+        sra_ids = ids[:100]
+        ids = ids[100:]
         esearch_params = {
             'db': 'sra',
             'id': ','.join (sra_ids)
@@ -232,10 +233,10 @@ def search_readgroups(request):
         esearch_response = requests.get(
             "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
             esearch_params)
-    
+
         # parse xml response: get relevant data for these SRAs
         for child in ET.fromstring(esearch_response.text):
-            readgroup = protocol.ReadGroup()
+            readgroup = readgroupsets.readgroups.add()
             for pid in child.findall("./SUBMISSION/IDENTIFIERS/PRIMARY_ID"):
                 readgroup.dataset_id = pid.text
             for pid in child.findall("./RUN_SET/RUN/IDENTIFIERS/PRIMARY_ID"):
@@ -249,21 +250,21 @@ def search_readgroups(request):
 
 def search_reads(request):
     """ Searches a genomic interval in the NCBI API and returns a list of converted GA4GH alignments
-    
+
     Args:
         request: SearchReadsRequest. If `request.page_size` is set, up to this many records are returned.
                  If not set, `_DEFAULT_PAGE_SIZE` is used as the page size.
                  `request.start` can be overridden by providing a greater start position in `request.page_token`.
-                 If provided, `request.page_token` is parsed to a long and compared with `request.start`. 
+                 If provided, `request.page_token` is parsed to a long and compared with `request.start`.
                  In that case, the greater of the two is used as the zero-based inclusive interval start.
-    
+
     Returns:
         Tuple:
             1) List of converted alignments in GA4GH schema
             2) Maximum zero-based exclusive alignment end position over all alignments returned.
                This value can be set as request.page_token (after parsing to a string) for a subsequent
                request; in that case, streaming will pick up where it left off after this request.
-    
+
     """
     # We are assuming the read group IDs are singleton
     run_accession = request.read_group_ids[0]

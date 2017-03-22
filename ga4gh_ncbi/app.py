@@ -72,7 +72,7 @@ def search_read_group_sets_route():
     	deserialized_request = protocol.fromJson(request.get_data(), search_request)
     except Exception, e:
     	print str(e)
-    read_group_set_list = search_read_group_sets(deserialized_request)
+    read_group_set_list = ncbi.search_read_group_sets(deserialized_request)
     response_proto = protocol.SearchReadGroupSetsResponse()
     response_proto.read_group_sets.extend(read_group_set_list)
     return _serialize_response(response_proto)
