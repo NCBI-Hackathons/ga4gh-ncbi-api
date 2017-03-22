@@ -200,6 +200,53 @@ def search_datasets(request):
         dataset_list.append(dataset)
     return dataset_list
 
+def search_readgroups(request):
+    ncbi_bioproject_id = request.read_group_sets
+    esearch_params = {
+        'db': 'sra',
+        'dbfrom': 'bioproject',
+        'id': ncbi_bioproject_id,
+        'term': 'all[filter]'
+    }
+    esearch_response = requests.get(
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi",
+        esearch_params)
+    
+    # parse xml response: get SRA IDs
+    ids = []
+    root = ET.fromstring(esearch_response.text)
+    for id in root.findall("./LinkSet/LinkSetDb"):
+        if (id.find("LinkName").text == "bioproject_sra_all"):
+            for sra in id.findall("./Link/Id"):
+                    ids.append(sra.text)
+    # === get all data for these SRAs ===
+    readgroupsets = protocol.ReadGroupSet()
+    while (len(ids)):
+        # e.g., https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=sra&id=3543186,3543185,3543183
+        sra_ids = ids[:sras_per_fetch]
+        ids = ids[sras_per_fetch:]
+        esearch_params = {
+            'db': 'sra',
+            'id': ','.join (sra_ids)
+        }
+        esearch_response = requests.get(
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
+            esearch_params)
+    
+        # parse xml response: get relevant data for these SRAs
+        for child in ET.fromstring(esearch_response.text):
+            readgroup = protocol.ReadGroup()
+            for pid in child.findall("./SUBMISSION/IDENTIFIERS/PRIMARY_ID"):
+                readgroup.dataset_id = pid.text
+            for pid in child.findall("./RUN_SET/RUN/IDENTIFIERS/PRIMARY_ID"):
+                readgroup.id = pid.text
+            for eid in child.findall("./RUN_SET/RUN/Pool/Member/IDENTIFIERS/EXTERNAL_ID"):
+                readgroup.biosample_id = eid.text
+            for node in child.findall("./RUN_SET/RUN"):
+                readgroup.reference_set_id = node.attrib['assembly']
+            readgroupsets.append(readgroup)
+    return readgroupsets
+
 def search_reads(request):
     """ Searches a genomic interval in the NCBI API and returns a list of converted GA4GH alignments
     

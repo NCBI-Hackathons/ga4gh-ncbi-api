@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GA4GH-NCBI API</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+  </head>
+  <body>
+    <div class="content">
+     <div class="logo">
+      <img src="{{url_for('static', filename='images/logo.png')}}" alt = "Logo" align="middle">
+      </div>
+      <div class="title">
+        <h1>
+        GA4GH-NCBI API
+        </h1>
+      </div>
+      <div>
+        <h3>Welcome!</h3>
+        <p>The GA4GH has designed an HTTP API that can be easily implemented over
+          a variety of genomic data stores. This software presents the data in NCBI
+          via GA4GH methods.
+        </p>
+        <div class="instructions">
+          <h3>Usage Instructions</h3>
+          <h4>Using cURL</h4>
+          <ol>
+            <li>To request the list of datasets you can send a cURL request from
+              the command line</li>
+            <ul>
+              <pre><code>
+curl -X POST --data '{"pageSize": 10}' <script>document.write(location.href)</script>/datasets/search \
+  -H "Content-Type: application/json"
+              </code></pre>
+            </ul>
+            <li>Then, using a returned dataset ID, search for ReadGroupSets.</li>
+            <ul>
+              <pre><code>
+curl -X POST --data '{"datasetId": "PPRCJAN"}' <script>document.write(location.href)</script>readgroupsets/search \
+  -H "Content-Type: application/json"
+              </pre></code>
+            </ul>
+            <li>Using the returned ReadGroupId, you can request read alignments
+              using genomic position. Note: not all runs have aligned reads.</li>
+            <ul>
+              <pre><code>
+curl -X POST --data '{"readGroupIds": ["PPRCJAN"], "start": 0, "end": 12345, "referenceId": "chr1"}' \
+  <script>document.write(location.href)</script>reads/search -H "Content-Type: application/json"
+              </pre></code>
+            </ul>
+          </ol>
+          <h4>Using GA4GH Python client</h4>
+          <ol>
+            <li>Install the ga4gh-client using <code>pip install ga4gh-client --pre</code>.
+            This will download the latest GA4GH client and install it to your
+            Python site packages.</li>
+            <li>In a Python console initialize the client</li>
+            <ul><pre><code>
+from ga4gh.client import client
+c = client.HttpClient("<script>document.write(location.href)</script>")
+              </code></pre>
+            </ul>
+            <li>Then try listing some datasets!</li>
+              <ul><pre><code>
+i = 0
+for dataset in c.search_datasets():
+  print dataset
+  if i > 100:
+    break
+                  </code>
+                </pre>
+              </ul>
+          </ol>
+        </div>
+        <h3>Mapping Schemas</h3>
+        <p>This software operates by translating API responses from various NCBI
+          APIs into the GA4GH data model. For example, here are a few of the
+          pertininent identifiers used to constrain search and discovery.
+        </p>
+        <p>
+          <table>
+            <tr>
+              <th>NCBI</th>
+              <th>GA4GH</th>
+            </tr>
+            <tr>
+              <td>SRA Bioproject ID</td>
+              <td>dataset.id</td>
+            </tr>
+            <tr>
+              <td>SRR Run ID</td>
+              <td>ReadGroupSet.id</td>
+            </tr>
+            <tr>
+              <td>Run Assembly</td>
+              <td>ReferenceSetId</td>
+            </tr>
+          </table>
+        </p>
+        <p>
+          As this software matures we expect these mappings to change as we
+          take better advantage of the software systems presented by NCBI.
+        </p>
+      </div>
+    </div>

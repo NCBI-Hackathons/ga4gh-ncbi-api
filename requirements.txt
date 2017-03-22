@@ -3,3 +3,4 @@ Flask-Testing
 ga4gh-schemas==0.6.0a10.post1
 nose
 requests
+https://github.com/NCBI-Hackathons/ga4gh-ncbi-api/releases/download/0.0.0/ngs-1.0.tar.gz
