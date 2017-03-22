@@ -19,7 +19,7 @@ _CIGAR_OPERATION_MAP = {'M': protocol.CigarUnit.ALIGNMENT_MATCH,
 
 
 def _get_num_reads(ngs_alignment):
-    """ Returns the number of reads in the template
+    """ Returns the number of reads in the template of an NCBI/NGS alignment
 
     Args:
         ngs_alignment (ngs.Alignment): aligned read
@@ -34,9 +34,18 @@ def _get_num_reads(ngs_alignment):
         return(1)
 
 
-def _get_strand(align):
+def _get_strand(ngs_alignment):
+    """ Returns the strand of an NCBI/NGS alignment
+    
+    Args:
+        ngs_alignment (ngs.Alignment): aligned read
+
+    Returns:
+        GA4GH Strand
+    
+    """
     try:
-        if align.getIsReversedOrientation():
+        if ngs_alignment.getIsReversedOrientation():
             return (common_pb2.NEG_STRAND)
         else:
             return (common_pb2.POS_STRAND)
