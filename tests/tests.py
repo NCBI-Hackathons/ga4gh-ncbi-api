@@ -11,6 +11,22 @@ class MyTest(TestCase):
     def create_app(self):
         return app.get_app()
 
+    def test_search_readgroups(self):
+        response = self.client.post('/readgroups', data='{}')
+        response_proto = protocol.fromJson(
+            response.get_data(), protocol.SearchReadgroupsResponse)
+        self.assertIsNotNone(response_proto, "Something should be returned")
+        self.assertEqual(response.status_code, 200, "A known good endpoint "
+                                                    "should return success")
+        self.assertGreater(
+            len(response_proto.readgroups), 0,
+            "Some readgroups should be returned.")
+
+        response = self.client.post('/readgroups', data='{"dataset_id": 356464}')
+        response_proto = protocol.fromJson(
+            response.get_data(), protocol.SearchReadgroupsResponse)
+        self.assertEqual(len(response_proto.readgroups), 356464)
+
     def test_search_datasets(self):
         response = self.client.post('/datasets/search', data='{}')
         response_proto = protocol.fromJson(
